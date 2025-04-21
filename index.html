@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>STOIKIOMETRI C8H18</title>
+  <style>
+    body {
+      background-color: #121212;
+      color: #ffffff;
+      font-family: 'Segoe UI', sans-serif;
+      padding: 20px;
+    }
+
+    input[type="number"] {
+      width: 100px;
+      padding: 5px;
+      margin-right: 10px;
+      border: none;
+      border-radius: 5px;
+      background-color: #1f1f1f;
+      color: #ffffff;
+    }
+
+    button {
+      padding: 6px 16px;
+      background-color: #333;
+      border: none;
+      border-radius: 5px;
+      color: white;
+      cursor: pointer;
+      margin-top: 10px;
+    }
+
+    .row {
+      display: flex;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 15px;
+      margin-bottom: 10px;
+    }
+
+    .box {
+      background-color: #1e1e1e;
+      border-radius: 10px;
+      padding: 15px;
+      box-shadow: 0 0 10px #000;
+      flex-grow: 1;
+      min-width: 300px;
+    }
+
+    .box h3 {
+      margin-top: 0;
+      border-bottom: 1px solid #444;
+      padding-bottom: 5px;
+    }
+
+    .equation {
+      font-family: 'Courier New', monospace;
+      font-size: 0.9em;
+      color: #00e676;
+      margin-top: 10px;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    table td {
+      padding: 4px 8px;
+      vertical-align: top;
+    }
+
+    .flex-container {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 15px;
+      margin-top: 20px;
+    }
+
+    .center-title {
+      text-align: center;
+      line-height: 1.4;
+      margin-bottom: 20px;
+    }
+
+  </style>
+</head>
+<body>
+
+<div class="center-title">
+  <h2 style="margin: 0;">STOIKIOMETRI PEMBAKARAN C<sub>8</sub>H<sub>18</sub></h2>
+  <p style="margin: 4px 0;"><strong>SMK GAJAH MADA BANYUWANGI</strong></p>
+  <p style="margin: 4px 0;">oleh : ........</p>
+</div>
+
+<div class="flex-container">
+  <!-- Box Input -->
+  <div class="box" style="flex: 1.5;">
+    <h3>Input Data</h3>
+    <div class="row">
+      <label>Massa C<sub>8</sub>H<sub>18</sub> :</label>
+      <input type="number" id="txC8H18" step="any">
+	  <label> gram</label>
+    </div>
+	<div class="row">
+      <label>Massa O<sub>2</sub> :</label>
+      <input type="number" id="txO2" step="any">
+	  <label> gram</label>
+    </div>
+    <div class="row">
+      <label><input type="radio" name="rasio" id="rb1" checked> TEORITIS</label>
+      <label><input type="radio" name="rasio" id="rb2"> EMPIRIS</label>
+    </div>
+    <button onclick="hitung()">Hitung</button>
+  </div>
+
+  <!-- Box Persamaan Reaksi -->
+  <div class="box" style="flex: 2.5;">
+    <h3>Persamaan Reaksi</h3>
+    <div class="equation" id="persamaan"></div>
+  </div>
+
+  <!-- Box Hasil Perhitungan -->
+  <div class="box" style="flex: 1.2;">
+    <h3>Hasil Perhitungan</h3>
+    <table>
+      <tr><td>AFR</td><td>:</td><td><span id="txAFR"></span></td></tr>
+      <tr><td>λ (Lambda)</td><td>:</td><td><span id="txLamda"></span></td></tr>
+      <tr><td>Massa CO<sub>2</sub> (g)</td><td>:</td><td><span id="txCO2"></span></td></tr>
+      <tr><td>Massa H<sub>2</sub>O (g)</td><td>:</td><td><span id="txH2O"></span></td></tr>
+      <tr><td>Massa CO (g)</td><td>:</td><td><span id="txCO"></span></td></tr>
+      <tr><td>Massa HC (g)</td><td>:</td><td><span id="txHC"></span></td></tr>
+    </table>
+  </div>
+</div>
+
+<script>
+  function hitung() {
+    const MW_C8H18 = 114.23;
+    const MW_O2 = 32.00;
+    const MW_CO2 = 44.01;
+    const MW_CO = 28.01;
+    const MW_H2O = 18.02;
+    const MW_HC = 13.02;
+
+    let rasio = 1, rLamda = 16.67;
+    let isEmpiris = false;
+
+    if (document.getElementById('rb2').checked) {
+      rasio = 1.134335;
+      rLamda = 14.7;
+      isEmpiris = true;
+    }
+
+    let massC8H18 = parseFloat(document.getElementById("txC8H18").value);
+    let xmassC8H18 = massC8H18 * rasio;
+    let massO2 = parseFloat(document.getElementById("txO2").value);
+
+    let AFR1 = (massO2 * 100 / 21) / massC8H18;
+    let AFR2 = (massO2 * 100 / 21) / xmassC8H18;
+
+    document.getElementById("txAFR").innerText = AFR2.toFixed(2);
+    document.getElementById("txLamda").innerText = (AFR2 / rLamda).toFixed(3);
+
+    let percentComplete = 1 - ((AFR1 - AFR2) / AFR1);
+
+    let molesC8H18 = massC8H18 / MW_C8H18;
+    let molesO2 = massO2 / MW_O2;
+
+    let molesCO2 = molesC8H18 * 8 * percentComplete;
+    let molesH2O = molesC8H18 * 9 * percentComplete;
+    let molesCO = molesC8H18 * (1 - percentComplete) * 8;
+    let molesHC = molesC8H18 * (1 - percentComplete);
+
+    document.getElementById("txCO2").innerText = (molesCO2 * MW_CO2).toFixed(2);
+    document.getElementById("txH2O").innerText = (molesH2O * MW_H2O).toFixed(2);
+    document.getElementById("txCO").innerText = (molesCO * MW_CO).toFixed(2);
+    document.getElementById("txHC").innerText = (molesHC * MW_HC).toFixed(2);
+
+    if (!isEmpiris) {
+      document.getElementById("persamaan").innerHTML =
+        "C<sub>8</sub>H<sub>18</sub> + 12.5O<sub>2</sub> → 8CO<sub>2</sub> + 9H<sub>2</sub>O";
+    } else {
+      let a = molesC8H18;
+      let b = molesO2;
+      let x = molesCO2;
+      let y = molesH2O;
+      let z = molesCO;
+      let w = molesHC;
+
+      document.getElementById("persamaan").innerHTML =
+        `${a.toFixed(2)}C<sub>8</sub>H<sub>18</sub> + ${b.toFixed(2)}O<sub>2</sub> → ` +
+        `${x.toFixed(2)}CO<sub>2</sub> + ${y.toFixed(2)}H<sub>2</sub>O + ` +
+        `${z.toFixed(2)}CO + ${w.toFixed(2)}HC`;
+    }
+  }
+</script>
+
+</body>
+</html>
